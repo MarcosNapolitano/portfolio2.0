@@ -1,74 +1,76 @@
-import React from 'react'
-import { quotes, authors, colors } from './data.js'
+import { useEffect, useRef, useState } from 'react'
+import { quotes, authors, colors } from './quotes_db'
+import '../styles/quotes.css'
 
-class App extends React.Component {
+interface Quote {
+  quote: typeof quotes[number];
+  author: typeof authors[number];
+  color: typeof colors[number];
+}
 
-  constructor(props) {
-    super(props);
-    this.state={
-      quotes: quotes,
-      authors: authors,
-      colors: colors,
-      quote:'',
-      author:'',
-      color: "rgb(143, 35, 35)"
+export default function Quotes() {
 
-    };
-    this.newQuote = this.newQuote.bind(this);
-  };
-  
-  componentDidMount() {
-    
-    window.addEventListener('load', this.newQuote) 
-    this.newQuote() 
-    
-  }
+  const [visible, setVisible] = useState<boolean>(true);
+  const [quote, setQuote] = useState<Quote>({
+    quote: quotes[0],
+    author: authors[0],
+    color: colors[0]
+  });
 
-  componentWillUnmount() { 
-    window.removeEventListener('load', this.newQuote)  
-  }
-  
-  newQuote() {
-    const Index = Math.floor(Math.random() * this.state.quotes.length);
-    const Color = Math.floor(Math.random() * this.state.colors.length);
+  useEffect(() => {
 
-    $('#text').fadeToggle(750)
-    $('#author').fadeToggle(750)
-    
-    setTimeout(()=>{
+    setVisible(true)
+  }, [quote])
 
-      this.setState({
-        quote: this.state.quotes[Index],
-        author: this.state.authors[Index],
-        color: this.state.colors[Color]
+  const handleNewQuote = () => {
+
+    setVisible(false)
+    let quoteIndex: number = Math.floor(Math.random() * quotes.length);
+    let colorIndex: number = Math.floor(Math.random() * colors.length);
+
+    while (colors[colorIndex] === quote.color)
+      colorIndex = Math.floor(Math.random() * colors.length);
+
+    while (quotes[quoteIndex] === quote.quote)
+      quoteIndex = Math.floor(Math.random() * quotes.length);
+
+    document.documentElement.style.setProperty('--new-color', colors[colorIndex]);
+
+    setTimeout(() => {
+      setQuote({
+        quote: quotes[quoteIndex],
+        author: authors[quoteIndex],
+        color: colors[colorIndex]
       });
+      
+      document.documentElement.style.setProperty('--main-color', colors[colorIndex]);
+    }, 1200);
 
-      $("Body").animate({backgroundColor: this.state.color, color: this.state.color}, 750)
-      $("#twitter").animate({color: this.state.color}, 750)
-      $("#new-quote").animate({backgroundColor: this.state.color}, 750)
-      $('#text').fadeToggle(750)
-      $('#author').fadeToggle(750)
-
-    },750)
-    
   };
 
-  render() {
-    return(
-      <div id='quote-box' onLoad={this.newQuote}>
-        <div id='quote'>
-          <h2 id='text'>{this.state.quote}</h2>
-        </div>
-        <p id='author'>- {this.state.author}</p>
-        <div id="link-container">
-          <a href={`https://twitter.com/intent/tweet?text="${this.state.quote}"- ${this.state.author}`} target="_blank" id="tweet-quote">
-            <i className="fa-brands fa-twitter-square" id="twitter" />
-          </a>
-          <button id="new-quote" onClick={this.newQuote}>New Quote</button>
-        </div>
+  return (
+    <div id='quote-box'>
+      <div id='quote'>
+        <h2 className={visible ? 'fade-in' : 'fade-out text-color-fade'} id='text'>
+          {quote?.quote}
+        </h2>
       </div>
-    )
-  }
+      <p className={visible ? 'fade-in' : 'fade-out text-color-fade'} id='author'>
+        - {quote?.author}
+      </p>
+      <div id="link-container">
+        <a
+          href={`https://twitter.com/intent/tweet?text="${quote?.quote}"- ${quote?.author}`}
+          target="_blank" id="tweet-quote">
+          <i className="fa-brands fa-twitter-square" id="twitter" />
+        </a>
+        <button
+          className={visible ? '' : 'background-color-fade'}
+          id="new-quote"
+          onClick={handleNewQuote}>
+          New Quote
+        </button>
+      </div>
+    </div>
+  )
 };
-  
-export default App

@@ -1,5 +1,9 @@
 ---
 
+import Quotes from '../components/quotes'
+import Calculator from '../components/calculator'
+import '../styles/styles.css'
+
 ---
 
 <html lang="en">
@@ -12,5 +16,11 @@
 	</head>
 	<body>
 		<h1>Astro</h1>
+    <div>
+      <Quotes client:load/>
+    </div>
+    <div>
+      <Calculator client:load/>
+    </div>
 	</body>
 </html>

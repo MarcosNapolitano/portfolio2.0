@@ -1,21 +1,9 @@
-html{
-  margin: 0;
-  font-size: 2vh;
-
+:root {
+  --main-color: rgb(143, 35, 35);
+  --new-color: rgb(143, 35, 35);
 }
 
-body{
-  margin: 0; 
-  min-height: 100vh;
-  min-width: 100vw;
-  background-color: rgb(143, 35, 35);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-#quote-box{
+#quote-box {
   margin: 0 auto;
   padding: 2em;
   background-color: whitesmoke;
@@ -26,74 +14,132 @@ body{
   border-radius: 5px;
 }
 
-@media(max-width:770px){
-  #quote-box{
-    width:60%
+@media(max-width:770px) {
+  #quote-box {
+    width: 60%
   }
 }
 
-@media(max-width:450px){
-  #quote-box{
+@media(max-width:450px) {
+  #quote-box {
     padding: 1.5em;
-    width:80%
+    width: 80%
   }
 }
 
-#quote{
+#quote {
   display: table-cell;
   vertical-align: middle;
   margin: auto;
   min-height: 100px;
-  
+  color: var(--main-color)
 }
 
-h2{
+h2 {
   margin: .5em;
   font-size: 1.5rem;
 }
 
-
-#author{
+#author {
   font-weight: 600;
   margin: 1em auto;
   text-align: right;
   font-size: 1.1em;
+  color: var(--main-color)
 }
 
-#link-container{
+#link-container {
   display: flex;
   justify-content: space-between;
 }
 
-
-
-#twitter{
+#twitter {
   font-size: 2.5em;
   color: rgb(143, 35, 35);
   scale: 100%;
   transition: scale .5s;
+  color: var(--main-color)
 }
 
-#twitter:hover{
+#twitter:hover {
   scale: 105%;
   cursor: pointer;
 }
 
-#new-quote{
+#new-quote {
 
   border: none;
   border-radius: 5px;
   font-size: .9em;
   padding: .8em;
   scale: 100%;
-  background-color: rgb(143, 35, 35);
+  background-color: var(--main-color);
   color: whitesmoke;
   transition: scale .5s;
-
 }
 
-#new-quote:hover{
+#new-quote:hover {
   scale: 105%;
   cursor: pointer;
-  
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+}
+
+@keyframes text-color-fade {
+  from {
+    color: var(--main-color);
+  }
+
+  to {
+    color: var(--new-color);
+  }
+}
+
+@keyframes background-color-fade {
+  from {
+    background-color: var(--main-color);
+  }
+
+  to {
+    background-color: var(--new-color);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.text-color-fade {
+  animation: text-color-fade 2s ease-in-out forwards;
+}
+
+.background-color-fade {
+  animation: background-color-fade 2s ease-in-out forwards;
+}
+
+.fade-in {
+  animation: fade-in 1s ease-in-out forwards;
+}
+
+.fade-out {
+  animation: fade-out 1s ease-in-out forwards;
 }

@@ -16,14 +16,14 @@ const quotes = [
     "Success is peace of mind, which is a direct result of self-satisfaction in knowing you made the effort to become the best of which you are capable.", 
     "I never dreamed about success. I worked for it.",
     "Success is getting what you want, happiness is wanting what you get."
-]
+] as const;
 
 const authors = [
     "Albert Einstein", "Mahatma Gandhi", "Mark Twain", "Eleanor Roosevelt", 
     "Norman Vincent Peale", "Walter Anderson", "Diane McLaren", "Winston S. Churchill", 
     "Herman Melville", "Colin R. Davis", "Henry David Thoreau", "Dale Carnegie", 
     "Calvin Coolidge", "Mister Rogers", "John Wooden", "Estée Lauder", "W. P. Kinsella"
-]
+] as const;
 
 const colors = [
     "rgb(143, 35, 35)",
@@ -34,7 +34,6 @@ const colors = [
     "rgb(35, 103, 143)",
     "rgb(116, 35, 143)",
     "rgb(143, 35, 109)"
-]
+] as const;
 
-export {quotes, authors, colors}
-
+export {quotes, authors, colors};
