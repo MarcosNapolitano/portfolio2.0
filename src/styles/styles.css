@@ -81,3 +81,16 @@ h6 {
 #__next {
   isolation: isolate;
 }
+
+.old-projects-container{
+
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+@media(max-width:800px) {
+  .old-projects-container {
+    flex-direction: column;
+  }
+}

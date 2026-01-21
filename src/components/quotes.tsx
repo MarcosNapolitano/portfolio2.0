@@ -11,6 +11,7 @@ interface Quote {
 export default function Quotes() {
 
   const [visible, setVisible] = useState<boolean>(true);
+  const global = useRef<HTMLDivElement>(null);
   const [quote, setQuote] = useState<Quote>({
     quote: quotes[0],
     author: authors[0],
@@ -34,7 +35,7 @@ export default function Quotes() {
     while (quotes[quoteIndex] === quote.quote)
       quoteIndex = Math.floor(Math.random() * quotes.length);
 
-    document.documentElement.style.setProperty('--new-color', colors[colorIndex]);
+    global.current?.style.setProperty('--new-color', colors[colorIndex]);
 
     setTimeout(() => {
       setQuote({
@@ -43,30 +44,28 @@ export default function Quotes() {
         color: colors[colorIndex]
       });
       
-      document.documentElement.style.setProperty('--main-color', colors[colorIndex]);
+      global.current?.style.setProperty('--main-color', colors[colorIndex]);
     }, 1200);
-
   };
 
   return (
-    <div id='quote-box'>
-      <div id='quote'>
+    <div ref={global} className='quote-root quote-box'>
+      <div className='quote'>
         <h2 className={visible ? 'fade-in' : 'fade-out text-color-fade'} id='text'>
           {quote?.quote}
         </h2>
       </div>
-      <p className={visible ? 'fade-in' : 'fade-out text-color-fade'} id='author'>
+      <p className={visible ? 'quote-author fade-in' : 'quote-author fade-out text-color-fade'}>
         - {quote?.author}
       </p>
-      <div id="link-container">
+      <div className="quote-link-container">
         <a
           href={`https://twitter.com/intent/tweet?text="${quote?.quote}"- ${quote?.author}`}
           target="_blank" id="tweet-quote">
           <i className="fa-brands fa-twitter-square" id="twitter" />
         </a>
         <button
-          className={visible ? '' : 'background-color-fade'}
-          id="new-quote"
+          className={visible ? 'new-quote' : 'new-quote background-color-fade'}
           onClick={handleNewQuote}>
           New Quote
         </button>

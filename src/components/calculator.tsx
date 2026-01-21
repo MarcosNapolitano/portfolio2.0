@@ -1,36 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/calculator.css'
 
-//falta poner boton de borrar y que las cuentas de periodico no den "max digits reached"
-
 export default function Calculator() {
 
   const [currentValue, setCurrentValue] = useState<string>('');
-  const [expression, setExpression] = useState<string>(' ');
+  const [expression, setExpression] = useState<string>('');
   const [result, setResult] = useState<string>();
   const [decimal, setDecimal] = useState<boolean>(false);
+  const [negative, setNegative] = useState<boolean>(false);
+
   const allowedKeys: Set<string> = new Set(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
-  const allowedOperators: Set<string> = new Set(['+', '-', '*', '/'])
+  const allowedOperators: Set<string> = new Set(['+', '-', 'x', '/', '*'])
   const equalButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handlePress = (event: KeyboardEvent) => {
       const value = event.key;
+      const shift = event.shiftKey;
+
+      // searchbar in some browsers
+      if (value === '/') event.preventDefault();
+
       orangize(value);
-
-      if (currentValue?.length === 15) return setResult('Max Digits Reached');
-      if (value === '.') return handleDecimal();
-      if (allowedOperators.has(value)) return handleOperator(value);
-      if (value === '=' || value === 'Enter') return calculate();
-
-      if (allowedKeys.has(value)) {
-        expression === ' ' ? setExpression(value) : setExpression(expression.concat(value))
-
-        if (currentValue.length === 1 && allowedOperators.has(currentValue)) {
-          setCurrentValue(value);
-        }
-        else setCurrentValue(currentValue.concat(value));
-      };
+      shift ? routeValue(value, true) : routeValue(value);
     };
 
     document.addEventListener("keydown", handlePress);
@@ -38,80 +30,153 @@ export default function Calculator() {
   }, [currentValue, result]);
 
   const handleClick = (id: string, event: React.MouseEvent) => {
-
-    if (currentValue?.length === 15) return setResult('Max Digits Reached');
-    if (id === '.') return handleDecimal();
-    if (id === '*' || id === '/' || id === '+') return handleOperator(id)
-    if (id === '=') return calculate();
-
     //keeps focus in "=" button
     equalButton.current?.focus();
+    routeValue(id)
+  };
 
-    expression === ' ' ? setExpression(id) : setExpression(expression.concat(id))
-    setCurrentValue(currentValue.concat(id));
+  const routeValue = (value: string, shift?: true) => {
+
+    if (currentValue?.length === 15) return setResult('Max Digits Reached');
+    if (allowedOperators.has(value)) return handleOperator(value);
+    if (value === '.') return handleDecimal();
+    if (value === '=' || value === 'Enter') return calculate();
+    if (value === 'Backspace' && shift) return reset();
+
+    // don't delete if already a result
+    if (value === 'Backspace' && !result) {
+      setCurrentValue(currentValue.slice(0, currentValue.length - 1));
+      setExpression(expression.slice(0, expression.length - 1));
+    }
+
+    if (allowedKeys.has(value)) {
+      setExpression(expression.concat(value))
+
+      if ((value === '0' && currentValue === '/') || negative && value === '0') {
+        setResult('1')
+        return setCurrentValue("Can't let you do that!")
+      }
+
+      if (negative) return setCurrentValue(currentValue.concat(value));
+
+      // if a number follows an operator or we enter a number following a calculate
+      // if result and new value we reset the expression
+      if ((currentValue.length === 1 && allowedOperators.has(currentValue)) || result) {
+        if (result) {
+          // it's almost a full reset
+          setExpression(value)
+          setResult(undefined);
+          setDecimal(false);
+          setNegative(false);
+        };
+        setCurrentValue(value);
+      }
+      else setCurrentValue(currentValue.concat(value));
+    };
   };
 
   const handleDecimal = () => {
-    if (decimal || !currentValue) return;
+    if (decimal || !currentValue || result) return;
     setDecimal(true)
-    setCurrentValue(currentValue.concat('.'));
+
+    // if current is an operator
+    if (allowedOperators.has(currentValue[currentValue.length - 1])) {
+      setExpression(expression.concat('0.'));
+      setCurrentValue('0.');
+    }
+    else {
+      setExpression(expression.concat('.'));
+      setCurrentValue(currentValue.concat('.'));
+    }
   };
 
   const handleOperator = (newOperator: string) => {
 
+    if (newOperator === '*') newOperator = 'x';
+    if (newOperator === '-' && currentValue === '-') {
+      setExpression(`${expression}(-`);
+      setCurrentValue('(-');
+      setNegative(true);
+      return
+    };
+
     if (!currentValue) setExpression(`0${newOperator}`);
-    else setExpression(`${currentValue}${newOperator}`);
+    else if (result)
+      setExpression(`${currentValue}${newOperator}`);
+    else
+      setExpression(`${expression}${newOperator}`);
+
     setDecimal(false);
     setCurrentValue(newOperator);
-    if (result) setResult(undefined)
+    if (result) setResult(undefined);
   };
 
   const calculate = () => {
 
     const lastElement = expression[expression.length - 1];
-    if (allowedOperators.has(lastElement)) return;
+    if (allowedOperators.has(lastElement) || result) return;
 
-    const result: string = eval(expression).toString();
+    // to do: be able to recalculate based on previous result
+    let newResult: string
 
-    if (result.length > 19) setCurrentValue(`${result.slice(0, 18)}E`);
-    else setCurrentValue(result);
+    if (expression.indexOf('x') !== -1)
+      newResult = eval(expression.replace("x", "*")).toString();
+    else if (negative)
+      newResult = eval(expression.concat(')')).toString();
+    else
+      newResult = eval(expression).toString();
 
-    setExpression(`${expression}=`);
-    setResult(result);
+    if (newResult.length > 19) setCurrentValue(`${newResult.slice(0, 18)}E`);
+    else setCurrentValue(newResult);
+
+    if (negative) {
+      setNegative(false)
+      setExpression(`${expression})=`);
+    }
+    else
+      setExpression(`${expression}=`);
+
+    setResult(newResult);
   };
 
   //reset is also called from backspace press but without an event
   const reset = (e?: React.KeyboardEvent) => {
 
     if (e) equalButton.current?.blur(); //prevents focus on AC
-    setCurrentValue('')
-    setResult(undefined)
-    setExpression(' ')
+    setCurrentValue('');
+    setExpression('');
+    setResult(undefined);
+    setNegative(false);
+    setDecimal(false);
   };
 
   //pressing the buttons go orange
   const orangize = (key: string) => {
+
+    if (key === "Backspace") key = 'AC'
+    if (key === "Enter") key = '\='
+    if (key === "*") key = 'X'
 
     const element = document.getElementById(`N${key}`);
     if (!element) return;
 
     element.classList.toggle('drum-pad_active');
     setTimeout(() => {
-      element.classList.remove('drum-pad_active')
+      element.classList.remove('drum-pad_active');
     }, 100);
   };
 
   return (
-    <div id="calculator">
-      <div id='display-panel'>
+    <div className='calculator-root calculator calculator-bg'>
+      <div className='display-panel'>
         {/* pre keep spaces when display inits " " */}
-        <pre><h2 id='display'>{expression}</h2></pre>
-        <h2 id='result'>{currentValue}</h2>
+        <pre><h2 className='display'>{expression || ' '}</h2></pre>
+        <pre><h2 className='display white'>{currentValue || ' '}</h2></pre>
       </div>
-      <div id="botonera">
+      <div className="botonera">
         <Button ref={equalButton} id="AC" click={(e) => reset(e)} />
         <Button id="/" click={(e) => handleClick('/', e)} />
-        <Button id="X" click={(e) => handleClick('*', e)} />
+        <Button id="X" click={(e) => handleClick('x', e)} />
         <Button id="7" click={(e) => handleClick('7', e)} />
         <Button id="8" click={(e) => handleClick('8', e)} />
         <Button id="9" click={(e) => handleClick('9', e)} />
@@ -145,6 +210,6 @@ function Button(props:
       type="button"
       value={props.id}
       onClick={props.click}
-      className="drum-pad">{props.id}</button>
+      className="calculator-button drum-pad">{props.id}</button>
   );
 };

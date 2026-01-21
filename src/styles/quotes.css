@@ -1,10 +1,10 @@
-:root {
+.quote-root {
   --main-color: rgb(143, 35, 35);
   --new-color: rgb(143, 35, 35);
 }
 
-#quote-box {
-  margin: 0 auto;
+.quote-root, 
+.quote-box {
   padding: 2em;
   background-color: whitesmoke;
   min-height: 150px;
@@ -15,19 +15,19 @@
 }
 
 @media(max-width:770px) {
-  #quote-box {
+  .quote-box {
     width: 60%
   }
 }
 
 @media(max-width:450px) {
-  #quote-box {
+  .quote-box {
     padding: 1.5em;
     width: 80%
   }
 }
 
-#quote {
+.quote {
   display: table-cell;
   vertical-align: middle;
   margin: auto;
@@ -35,12 +35,12 @@
   color: var(--main-color)
 }
 
-h2 {
+.quote-root h2 {
   margin: .5em;
   font-size: 1.5rem;
 }
 
-#author {
+.quote-author {
   font-weight: 600;
   margin: 1em auto;
   text-align: right;
@@ -48,44 +48,24 @@ h2 {
   color: var(--main-color)
 }
 
-#link-container {
+.quote-link-container {
   display: flex;
   justify-content: space-between;
 }
 
-#twitter {
-  font-size: 2.5em;
-  color: rgb(143, 35, 35);
-  scale: 100%;
-  transition: scale .5s;
-  color: var(--main-color)
-}
-
-#twitter:hover {
-  scale: 105%;
-  cursor: pointer;
-}
-
-#new-quote {
-
+.new-quote {
   border: none;
   border-radius: 5px;
-  font-size: .9em;
-  padding: .8em;
+  font-size: .9em; padding: .8em;
   scale: 100%;
   background-color: var(--main-color);
   color: whitesmoke;
   transition: scale .5s;
 }
 
-#new-quote:hover {
+.new-quote:hover {
   scale: 105%;
   cursor: pointer;
-}
-
-.box {
-  width: 200px;
-  height: 200px;
 }
 
 @keyframes text-color-fade {
