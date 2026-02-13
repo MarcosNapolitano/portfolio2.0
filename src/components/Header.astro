@@ -1,0 +1,84 @@
+---
+import MobileHeader from './MobileHeader.astro'
+---
+<header>
+  <div id="logo_container">
+    <a href="#home">
+      <img src="/images/Logo.png" alt="logo" id="logo" />
+    </a>
+  </div>
+  <nav>
+    <ul class="navbar">
+      <li><a id="target" class="appear" href="#">Español</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <div class="toggle">
+        <input id="switch" type="checkbox">
+        <label for="switch">
+
+          <!-- SUN -->
+          <svg class="icon sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="4" stroke="#202020" stroke-width="2"/>
+            <line x1="12" y1="20" x2="12" y2="23" stroke="#202020" stroke-width="2"/>
+            <line x1="1" y1="12" x2="4" y2="12" stroke="#202020" stroke-width="2"/>
+            <line x1="20" y1="12" x2="23" y2="12" stroke="#202020" stroke-width="2"/>
+          </svg>
+
+          <!-- MOON -->
+          <svg class="icon moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 0 1 11.21 3 7 7 0 1 0 21 12.79z"/>
+          </svg>
+
+        </label>
+      </div>
+    </ul>
+  </nav>
+  <button
+    class="mobile_hidden nav_button"
+    aria-label="Abrir Menú"
+    popovertarget="navbar_mobile"
+  >
+    ☰
+  </button>
+  <nav class="mobile_hidden" id="navbar_mobile" popover>
+    <ul class="navbar_mobile">
+      <li>
+        <a
+          id="target"
+          class="appear"
+          popovertarget="navbar_mobile"
+          popovertargetaction="hide"
+          href="#"
+          >Español</a
+        >
+      </li>
+      <li>
+        <a
+          href="#about"
+          popovertarget="navbar_mobile"
+          popovertargetaction="hide"
+          >About</a
+        >
+      </li>
+      <li>
+        <a
+          href="#portfolio"
+          popovertarget="navbar_mobile"
+          popovertargetaction="hide"
+          >Portfolio</a
+        >
+      </li>
+      <li>
+        <a
+          href="#contact"
+          popovertarget="navbar_mobile"
+          popovertargetaction="hide"
+          >Contact</a
+        >
+      </li>
+    </ul>
+  </nav>
+  <MobileHeader />
+</header>
